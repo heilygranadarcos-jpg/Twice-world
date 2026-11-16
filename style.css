@@ -17,6 +17,120 @@ body {
     line-height: 1.6;
 }
 
+.star-field {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0.72;
+}
+
+.star {
+    position: fixed;
+    top: var(--star-y);
+    left: var(--star-x);
+    display: block;
+    width: var(--star-size);
+    height: var(--star-size);
+    background-color: var(--star-color);
+    clip-path: polygon(50% 0%, 63% 37%, 100% 50%, 63% 63%, 50% 100%, 37% 63%, 0% 50%, 37% 37%);
+    filter: drop-shadow(0 0 4px var(--star-color));
+    transform: translate3d(0, 0, 0);
+    animation: star-float var(--float-duration) ease-in-out var(--float-delay) infinite;
+}
+
+.star::after {
+    position: absolute;
+    inset: -6px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.85), transparent 70%);
+    content: "";
+    opacity: 0;
+}
+
+.star--twinkle {
+    animation-name: star-float, star-twinkle;
+    animation-duration: var(--float-duration), var(--twinkle-duration);
+    animation-delay: var(--float-delay), var(--twinkle-delay);
+    animation-iteration-count: infinite, infinite;
+    animation-timing-function: ease-in-out, ease-in-out;
+}
+
+.star--reactive {
+    translate: var(--mouse-x, 0px) var(--mouse-y, 0px);
+    transition: translate 180ms ease-out;
+}
+
+.star.is-hovered {
+    z-index: 1;
+    scale: 1.55;
+    rotate: 45deg;
+    filter: drop-shadow(0 0 8px var(--star-color)) brightness(1.25);
+    transition: scale 180ms ease-out, rotate 180ms ease-out, filter 180ms ease-out;
+}
+
+.star.is-hovered::after {
+    animation: star-glint 550ms ease-out;
+}
+
+.star-particle {
+    position: fixed;
+    top: var(--particle-y-start);
+    left: var(--particle-x-start);
+    width: 5px;
+    height: 5px;
+    background-color: var(--star-color);
+    clip-path: polygon(50% 0%, 63% 37%, 100% 50%, 63% 63%, 50% 100%, 37% 63%, 0% 50%, 37% 37%);
+    filter: drop-shadow(0 0 4px var(--star-color));
+    animation: star-burst 650ms ease-out forwards;
+}
+
+@keyframes star-float {
+    0%, 100% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    50% {
+        transform: translate3d(var(--drift-x), var(--drift-y), 0);
+    }
+}
+
+@keyframes star-twinkle {
+    0%, 100% {
+        opacity: 0.4;
+        filter: drop-shadow(0 0 2px var(--star-color));
+    }
+
+    50% {
+        opacity: 1;
+        filter: drop-shadow(0 0 7px var(--star-color));
+    }
+}
+
+@keyframes star-glint {
+    0% {
+        opacity: 0;
+        transform: scale(0.25);
+    }
+
+    45% {
+        opacity: 1;
+        transform: scale(1.5);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(2);
+    }
+}
+
+@keyframes star-burst {
+    to {
+        opacity: 0;
+        transform: translate(var(--particle-x), var(--particle-y)) scale(0.2) rotate(90deg);
+    }
+}
+
 
 /* HEADER */
 
@@ -256,5 +370,17 @@ footer p {
 
     .section h2 {
         font-size: 34px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .star,
+    .star-particle {
+        animation: none !important;
+    }
+
+    .star,
+    .star::after {
+        transition: none !important;
     }
 }
